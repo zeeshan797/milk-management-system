@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Customers - Milk Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="fas fa-users"></i> Customers</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'new_customer' %}" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Add New Customer
+        </a>
+    </div>
+</div>
+
+{% if customers_with_summary %}
+<div class="row">
+    {% for customer_data in customers_with_summary %}
+    <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user"></i> {{ customer_data.customer.customer_name }}
+                    </h5>
+                    <span class="badge bg-primary">{{ customer_data.customer.acc_no }}</span>
+                </div>
+                
+                <p class="card-text text-muted">
+                    <i class="fas fa-phone"></i> {{ customer_data.customer.mobile_no|default:"No phone" }}
+                </p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <small class="text-muted">Total Amount</small>
+                        <div class="fw-bold text-success">₹{{ customer_data.total_amount }}</div>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted">Total Quantity</small>
+                        <div class="fw-bold text-primary">{{ customer_data.total_quantity }} L</div>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted">Entries</small>
+                        <div class="fw-bold text-info">{{ customer_data.recent_entries_count }}</div>
+                    </div>
+                </div>
+                
+                {% if customer_data.last_entry %}
+                <div class="mb-3">
+                    <small class="text-muted">Last Entry:</small>
+                    <div class="small">{{ customer_data.last_entry.date|date:"M d, Y" }} - ₹{{ customer_data.last_entry.amt }}</div>
+                </div>
+                {% endif %}
+                
+                <div class="btn-group w-100" role="group">
+                    <a href="{% url 'customer_detail' customer_data.customer.pk %}" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-eye"></i> View
+                    </a>
+
+                    <a href="{% url 'update_customer' customer_data.customer.pk %}" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                    </a>
+    
+                    <!-- FIXED: Replace JavaScript button with actual form -->
+                    
+                        
+                        <a href="{% url 'delete_customer' customer_data.customer.id %}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" 
+                            onclick="return confirm('Are you sure you want to delete {{ customer_data.customer.customer_name }}? This will also delete all related milk entries.')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No Customers Found</h4>
+        <p class="text-muted">Start by adding your first customer to manage milk entries.</p>
+        <a href="{% url 'new_customer' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Add First Customer
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

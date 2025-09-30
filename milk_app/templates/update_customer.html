@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head%}<link rel='stylesheet' href = "{% static 'milk_app/style.css' %}">{% endblock %}
+{% block content %}
+
+<div class="form-container">
+    <h2>Upload Video</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div>
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="text-danger">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+{% endblock %}

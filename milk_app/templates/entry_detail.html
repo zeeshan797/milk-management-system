@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Entry Detail - {{ entry.customer.customer_name }} - Milk Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2><i class="fas fa-clipboard-list"></i> Milk Entry Detail</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'entries' %}" class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to Entries
+        </a>
+        <a href="{% url 'update_entry' entry.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit Entry
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Entry Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Date:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-primary">{{ entry.date|date:"l, F d, Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Customer:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <a href="{% url 'customer_detail' entry.customer.pk %}" class="text-decoration-none">
+                            {{ entry.customer.customer_name }}
+                        </a>
+                        <small class="text-muted">(Account: {{ entry.customer.acc_no }})</small>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Milk Type:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-{% if entry.milk_type == 'cow' %}primary{% else %}warning{% endif %}">
+                            {{ entry.get_milk_type_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Shift:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-{% if entry.shift == 'day' %}warning{% else %}info{% endif %}">
+                            {{ entry.get_shift_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Fat Percentage:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="fs-5 text-success">{{ entry.fat }}%</span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Quantity:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="fs-5 text-primary">{{ entry.qnt }} Liters</span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Amount:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="fs-4 text-success fw-bold">₹{{ entry.amt }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-cog"></i> Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'update_entry' entry.pk %}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit Entry
+                    </a>
+                    <a href="{% url 'customer_detail' entry.customer.pk %}" class="btn btn-outline-info">
+                        <i class="fas fa-user"></i> View Customer
+                    </a>
+                    <button type="button" class="btn btn-outline-success" onclick="printEntry()">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
+                    <hr>
+                    <a href="{% url 'delete_entry' entry.pk %}">
+                        <button type="button" class="btn btn-outline-danger w-100" 
+                                onclick="return confirm('Are you sure you want to delete this entry?');">
+                            <i class="fas fa-trash"></i> Delete Entry
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function printEntry() {
+    const printContent = `
+        <div style="font-family: monospace; text-align: center; padding: 20px;">
+            <h2>MILK ENTRY RECEIPT</h2>
+            <hr>
+            <table style="margin: 0 auto; text-align: left;">
+                <tr><td><strong>Date:</strong></td><td>{{ entry.date|date:"M d, Y" }}</td></tr>
+                <tr><td><strong>Customer:</strong></td><td>{{ entry.customer.customer_name }}</td></tr>
+                <tr><td><strong>Account:</strong></td><td>{{ entry.customer.acc_no }}</td></tr>
+                <tr><td><strong>Milk Type:</strong></td><td>{{ entry.get_milk_type_display }}</td></tr>
+                <tr><td><strong>Shift:</strong></td><td>{{ entry.get_shift_display }}</td></tr>
+                <tr><td><strong>Fat %:</strong></td><td>{{ entry.fat }}%</td></tr>
+                <tr><td><strong>Quantity:</strong></td><td>{{ entry.qnt }} L</td></tr>
+                <tr><td><strong>Amount:</strong></td><td>₹{{ entry.amt }}</td></tr>
+            </table>
+            <hr>
+            <p><em>Thank you!</em></p>
+        </div>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Entry Receipt - {{ entry.customer.customer_name }}</title>
+            </head>
+            <body>
+                ${printContent}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
+</script>
+{% endblock %}

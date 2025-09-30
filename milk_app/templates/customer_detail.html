@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ customer.customer_name }} - Customer Detail{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2><i class="fas fa-user"></i> {{ customer.customer_name }}</h2>
+        <p class="text-muted">Account No: {{ customer.acc_no }} | Phone: {{ customer.mobile_no|default:"Not provided" }}</p>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'customers' %}" class="btn btn-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to Customers
+        </a>
+        <a href="{% url 'update_customer' customer.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit Customer
+        </a>
+    </div>
+</div>
+
+<!-- Date Range Filter -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="fas fa-calendar-alt"></i> Payment Period</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="from_date" class="form-label">From Date</label>
+                <input type="date" class="form-control" id="from_date" name="from_date" value="{{ from_date }}">
+            </div>
+            <div class="col-md-4">
+                <label for="to_date" class="form-label">To Date</label>
+                <input type="date" class="form-control" id="to_date" name="to_date" value="{{ to_date }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-search"></i> Apply Filter
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="setLast10Days()">
+                    <i class="fas fa-calendar-week"></i> Last 10 Days
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payment Summary Cards -->
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-rupee-sign fa-2x mb-2"></i>
+                <h5>Total Payment</h5>
+                <h3>₹{{ total_amount }}</h3>
+                <small>{{ date_range_days }} days period</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-weight fa-2x mb-2"></i>
+                <h5>Total Quantity</h5>
+                <h3>{{ total_quantity }} L</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                <h5>Total Entries</h5>
+                <h3>{{ total_entries }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overall Customer Statistics -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="fas fa-chart-bar"></i> Lifetime Statistics</h5>
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-3">
+                <h4 class="text-success">₹{{ overall_stats.lifetime_amount }}</h4>
+                <small class="text-muted">Lifetime Amount</small>
+            </div>
+            <div class="col-3">
+                <h4 class="text-primary">{{ overall_stats.lifetime_quantity }} L</h4>
+                <small class="text-muted">Lifetime Quantity</small>
+            </div>
+            <div class="col-3">
+                <h4 class="text-info">{{ overall_stats.lifetime_entries }}</h4>
+                <small class="text-muted">Total Entries</small>
+            </div>
+            <div class="col-3">
+                <h4 class="text-warning">{{ overall_stats.avg_fat }}%</h4>
+                <small class="text-muted">Average Fat</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Entries by Date -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list-alt"></i> Milk Entries ({{ from_date }} to {{ to_date }})</h5>
+    </div>
+    <div class="card-body">
+        {% if entries_by_date %}
+            {% for date, data in entries_by_date.items %}
+            <div class="mb-4 border rounded p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">
+                        <i class="fas fa-calendar-day"></i> {{ date|date:"l, F d, Y" }}
+                    </h6>
+                    <div>
+                        <span class="badge bg-success me-1">₹{{ data.daily_total }}</span>
+                        <span class="badge bg-primary">{{ data.daily_quantity }} L</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Shift</th>
+                                <th>Milk Type</th>
+                                <th>Fat %</th>
+                                <th>Quantity (L)</th>
+                                <th>Amount (₹)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in data.entries %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{% if entry.shift == 'day' %}warning{% else %}info{% endif %}">
+                                        {{ entry.get_shift_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if entry.milk_type == 'cow' %}primary{% else %}secondary{% endif %}">
+                                        {{ entry.get_milk_type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ entry.fat }}%</td>
+                                <td>{{ entry.qnt }} L</td>
+                                <td><strong>₹{{ entry.amt }}</strong></td>
+                                <td>
+                                    <a href="{% url 'entry_detail' entry.pk %}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'update_entry' entry.pk %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No entries found for the selected date range.</p>
+            <a href="{% url 'new_entry' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Entry for This Customer
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setLast10Days() {
+    const today = new Date();
+    const tenDaysAgo = new Date(today);
+    tenDaysAgo.setDate(today.getDate() - 9);
+    
+    document.getElementById('from_date').value = tenDaysAgo.toISOString().split('T');
+    document.getElementById('to_date').value = today.toISOString().split('T');
+}
+
+// Auto-submit form when quick button is used
+function quickFilter(days) {
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (days - 1));
+    
+    document.getElementById('from_date').value = startDate.toISOString().split('T');
+    document.getElementById('to_date').value = today.toISOString().split('T');
+    
+    // Submit the form
+    document.querySelector('form').submit();
+}
+</script>
+{% endblock %}

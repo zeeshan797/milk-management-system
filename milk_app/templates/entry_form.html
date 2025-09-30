@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Edit Entry{% else %}Add New Entry{% endif %} - Milk Management System
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>
+            <i class="fas fa-plus-circle"></i>
+            {% if object %}Edit Milk Entry{% else %}Add New Milk Entry{% endif %}
+        </h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'entries' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Entries
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clipboard-list"></i> Milk Entry Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="entryForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.customer.id_for_label }}" class="form-label">
+                            Select Customer <span class="text-danger">*</span>
+                        </label>
+                        {{ form.customer }}
+                        {% if form.customer.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.customer.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Choose the customer from your registered list</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.milk_type.id_for_label }}" class="form-label">
+                                Milk Type <span class="text-danger">*</span>
+                            </label>
+                            {{ form.milk_type }}
+                            {% if form.milk_type.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.milk_type.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.shift.id_for_label }}" class="form-label">
+                                Shift <span class="text-danger">*</span>
+                            </label>
+                            {{ form.shift }}
+                            {% if form.shift.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.shift.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.fat.id_for_label }}" class="form-label">
+                                Fat % <span class="text-danger">*</span>
+                            </label>
+                            {{ form.fat }}
+                            {% if form.fat.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.fat.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Enter fat percentage</div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.qnt.id_for_label }}" class="form-label">
+                                Quantity (Liters) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.qnt }}
+                            {% if form.qnt.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.qnt.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Milk quantity in liters</div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <label for="{{ form.amt.id_for_label }}" class="form-label">
+                                Amount (₹) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.amt }}
+                            {% if form.amt.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.amt.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Total amount calculated</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'entries' %}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            {% if object %}Update Entry{% else %}Add Entry{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add form classes to Django form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+    });
+});
+</script>
+{% endblock %}

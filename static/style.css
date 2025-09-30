@@ -1,0 +1,49 @@
+/* Container */
+nav {
+    display: flex;                
+    justify-content: space-between;
+    align-items: center;           
+    gap: 16px;
+    padding: 12px 20px;
+    background: #1B3C53;         
+    position: sticky;             
+    top: 0;                       
+    z-index: 1000;
+  }
+  
+  /* Link groups */
+  .nav-items,
+  .register {
+    display: flex;                
+    align-items: center;                                                  
+    gap: 18px;
+    flex-wrap: wrap;               
+  }
+  
+  /* Links */
+  nav a {
+    color: #e5e7eb;              
+    text-decoration: none;                                              
+    font: 500 14px/1.2 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: color .2s ease, background-color .2s ease;                
+  }
+  
+  nav a:hover {
+    color: #ffffff;                                                       
+    background: rgba(255,255,255,.08);                                     
+  }
+  
+  /* Active/current page helper (optional) */
+  nav a.active {
+    color: #ffffff;                                                       
+    background: rgba(255,255,255,.14);                                    
+  }
+  
+  /* Small screens */
+  @media (max-width: 640px) {
+    nav { padding: 10px 14px; }                                            
+    nav a { padding: 8px 8px; font-size: 13px; }                           
+  }
+  

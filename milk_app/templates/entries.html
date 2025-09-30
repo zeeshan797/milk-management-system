@@ -52,7 +52,7 @@
                 <label for="shift" class="form-label">Shift</label>
                 <select class="form-select" name="shift">
                     <option value="">All Shifts</option>
-                    <option value="day" {% if selected_shift == 'day' %}selected{% endif %}>Day</option>
+                    <option value="day" {% if selected_shift == 'morning' %}selected{% endif %}>Morning</option>
                     <option value="evening" {% if selected_shift == 'evening' %}selected{% endif %}>Evening</option>
                 </select>
             </div>
@@ -127,12 +127,12 @@
                             </a>
                         </td>
                         <td>
-                            <span class="badge bg-{% if entry.milk_type == 'cow' %}primary{% else %}warning{% endif %}">
+                            <span class="badge bg-{% if entry.milk_type == 'cow' %}warning{% else %}dark{% endif %}" style="min-width: 60px">
                                 {{ entry.get_milk_type_display }}
                             </span>
                         </td>
                         <td>
-                            <span class="badge bg-{% if entry.shift == 'day' %}warning{% else %}info{% endif %}">
+                            <span class="badge bg-{% if entry.shift == 'morning' %}success{% else %}danger{% endif %}">
                                 {{ entry.get_shift_display }}
                             </span>
                         </td>

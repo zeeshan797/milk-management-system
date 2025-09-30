@@ -12,7 +12,7 @@ class Customer(models.Model):
 
 class MilkEntry(models.Model):
     milk_type_choices = (("cow", "Cow"), ("buffalo", "Buffalo"))
-    shift_choices = (("day", "Day"), ("evening", "Evening"))
+    shift_choices = (("morning", "morning"), ("evening", "Evening"))
 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     acc_no = models.IntegerField(blank=True, null=True, editable=False)

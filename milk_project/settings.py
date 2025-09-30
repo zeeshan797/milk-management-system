@@ -22,7 +22,8 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'True'
 
 # ALLOWED_HOSTS = []
 #edited
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
 
 
 # Application definition
